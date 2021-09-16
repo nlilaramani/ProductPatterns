@@ -14,8 +14,11 @@ import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
+import io.vavr.control.Try;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +60,19 @@ public class ProductServiceSample {
         Supplier<Iterable<Product>> decorated = Retry
             .decorateSupplier(retry, productRepo::findAll);
         return decorated.get();
+     }
+     
+     public Iterable<Product> getAllProductsFallback(){
+         System.out.println(circuitBreaker+" "+circuitBreaker.getState());
+         List<Product> defaultProducts=new ArrayList<Product>();
+         Product p=new Product();
+         p.setName("A new product");
+         p.setDescription("New description");
+         p.setPrice(100.00);
+         defaultProducts.add(p);
+         Supplier<Iterable<Product>> decorated = CircuitBreaker
+            .decorateSupplier(circuitBreaker, productRepo::findAll);
+         return Try.ofSupplier(decorated).recover(t->defaultProducts).get();
      }
      
      

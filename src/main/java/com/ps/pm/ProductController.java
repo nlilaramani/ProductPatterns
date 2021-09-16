@@ -62,6 +62,10 @@ public class ProductController {
         return service1.getAllProductsLimiter();
     }
     
+    @RequestMapping(value = "/productsFallback", method = RequestMethod.GET)
+    public Iterable<Product> getAllProductsFallback(){
+        return service1.getAllProductsFallback();
+    }
     @RequestMapping(value = "/products", method = RequestMethod.POST)
     public ProductContract addProduct(@RequestBody ProductContract pc){
         Product p=new Product();
