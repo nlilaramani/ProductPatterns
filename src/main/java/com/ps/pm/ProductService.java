@@ -26,13 +26,14 @@ public class ProductService {
         this.readingListCircuitBreaker = circuitBreakerFactory.create("recommended");
         
     }
-     public Mono<Iterable<Product>> getAllProducts(){
+    
+    public Mono<Iterable<Product>> getAllProductsBreaker(){
          return readingListCircuitBreaker.run(Mono.just(productRepo.findAll()),(a) -> {
              return null; //To change body of generated lambdas, choose Tools | Templates.
          });
     }
      
-     public Mono<Iterable<Product>> getProductsMono(){
-         return Mono.just(productRepo.findAll());
+     public Iterable<Product> getAllProducts(){
+         return productRepo.findAll();
      }
 }

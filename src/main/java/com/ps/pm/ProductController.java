@@ -42,9 +42,26 @@ public class ProductController {
     }
     @RequestMapping(value = "/products", method = RequestMethod.GET)
     public Iterable<Product> getAllProducts(){
-        return service1.getAllProductsLimiter();
+        return service1.getAllProducts();        
     }
 
+    @RequestMapping(value = "/productsRetry", method = RequestMethod.GET)
+    public Iterable<Product> getAllProductsRetry(){
+        //return service1.getAllProductsLimiter();
+        return service1.getAllProductsWithRetry();
+    }
+    
+    @RequestMapping(value = "/productsBreaker", method = RequestMethod.GET)
+    public Iterable<Product> getAllProductsBreaker(){
+        //return service1.getAllProductsLimiter();
+        return service1.getAllProductsBreaker();
+    }
+    
+    @RequestMapping(value = "/productsLimiter", method = RequestMethod.GET)
+    public Iterable<Product> getAllProductsLimiter(){
+        return service1.getAllProductsLimiter();
+    }
+    
     @RequestMapping(value = "/products", method = RequestMethod.POST)
     public ProductContract addProduct(@RequestBody ProductContract pc){
         Product p=new Product();

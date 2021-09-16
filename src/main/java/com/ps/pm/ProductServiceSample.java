@@ -11,6 +11,9 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RateLimiterConfig;
 import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
+import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryConfig;
+import io.github.resilience4j.retry.RetryRegistry;
 
 import java.time.Duration;
 import java.util.function.Function;
@@ -29,17 +32,30 @@ public class ProductServiceSample {
      private ProductRepo productRepo;
      private final CircuitBreaker circuitBreaker;
      private final RateLimiter rateLimiter;
+     private final Retry retry;
+     
      public Iterable<Product> getAllProducts(){
-         System.out.println(circuitBreaker+" "+circuitBreaker.getState());
+         return productRepo.findAll();
+     }
+     
+     public Iterable<Product> getAllProductsBreaker(){
+        System.out.println(circuitBreaker+" "+circuitBreaker.getState());
         Supplier<Iterable<Product>> decorated = CircuitBreaker
-       .decorateSupplier(circuitBreaker, productRepo::findAll);
+            .decorateSupplier(circuitBreaker, productRepo::findAll);
         return decorated.get();
      }
      
      public Iterable<Product> getAllProductsLimiter(){
-         System.out.println(circuitBreaker+" "+circuitBreaker.getState());
+        System.out.println("Settingup with Limiter");
         Supplier<Iterable<Product>> decorated = RateLimiter
-       .decorateSupplier(rateLimiter, productRepo::findAll);
+            .decorateSupplier(rateLimiter, productRepo::findAll);
+        return decorated.get();
+     }
+     
+     public Iterable<Product> getAllProductsWithRetry(){
+         System.out.println("Settingup with Retries");
+        Supplier<Iterable<Product>> decorated = Retry
+            .decorateSupplier(retry, productRepo::findAll);
         return decorated.get();
      }
      
@@ -63,6 +79,9 @@ public class ProductServiceSample {
         RateLimiterRegistry rregistry = RateLimiterRegistry.of(rconfig);
         rateLimiter = rregistry.rateLimiter("PS");
         
+        RetryConfig retryConfig = RetryConfig.custom().maxAttempts(2).build();
+        RetryRegistry retryRegistry = RetryRegistry.of(retryConfig);
+        retry = retryRegistry.retry("PS Retry");
      }
     
 }
