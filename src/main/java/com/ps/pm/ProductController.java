@@ -42,7 +42,7 @@ public class ProductController {
     }
     @RequestMapping(value = "/products", method = RequestMethod.GET)
     public Iterable<Product> getAllProducts(){
-        return service1.getAllProducts();
+        return service1.getAllProductsLimiter();
     }
 
     @RequestMapping(value = "/products", method = RequestMethod.POST)
