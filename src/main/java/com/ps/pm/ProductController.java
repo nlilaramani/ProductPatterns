@@ -27,6 +27,8 @@ public class ProductController {
     private ProductRepo productRepo;
     @Autowired
     private ProductService service;
+    @Autowired
+    SimpleSourceBean simpleSourceBean;
     
     @Autowired
     private ProductServiceSample service1;
@@ -74,6 +76,7 @@ public class ProductController {
         p.setDescription(pc.getDescription());
         p.setPrice(pc.getPrice());
         productRepo.save(p);
+        simpleSourceBean.publishProductChange("SAVE",pc);
         return pc;
     }
     
