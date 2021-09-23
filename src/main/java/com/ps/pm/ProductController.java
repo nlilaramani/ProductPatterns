@@ -7,6 +7,8 @@ package com.ps.pm;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
@@ -23,6 +25,7 @@ import reactor.core.publisher.Mono;
  */
 @RestController
 public class ProductController {
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     @Autowired 
     private ProductRepo productRepo;
     @Autowired
@@ -44,6 +47,7 @@ public class ProductController {
     }
     @RequestMapping(value = "/products", method = RequestMethod.GET)
     public Iterable<Product> getAllProducts(){
+        logger.debug("Getting all products");
         return service1.getAllProducts();        
     }
 
@@ -80,8 +84,14 @@ public class ProductController {
         return pc;
     }
     
-     @RequestMapping(value="/products/{id}", method=RequestMethod.DELETE)
+    @RequestMapping(value="/products/{id}", method=RequestMethod.DELETE)
     public void deleteProduct(@PathVariable(name="id") Integer id){
         productRepo.deleteById(id);
+    }
+    
+    @RequestMapping(value="/products/{id}", method=RequestMethod.GET)
+    public Product getProduct(@PathVariable(name="id") Integer id){
+        logger.debug("Retrieving product by id "+id);
+        return productRepo.findById(id).get();
     }
 }
